@@ -1,0 +1,25 @@
+.kpi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.kpi__item {
+  flex: 1 1 180px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: rgba(247, 249, 252, 0.9);
+}
+
+.kpi__value {
+  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.kpi__label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}

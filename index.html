@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PeriféricosPRO</title>
+    <meta
+      name="description"
+      content="Periféricos competitivos de alto rendimiento: mouse, teclados Hall Effect, mousepads, monitores e IEMs."
+    />
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Saltar al contenido</a>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegación principal">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true"></div>
+          <div class="brand__meta">
+            <div class="brand__name">PeriféricosPRO</div>
+            <div class="brand__tagline">Nicho. Precisión. Rendimiento.</div>
+          </div>
+        </div>
+
+        <button class="sidebar__toggle" id="navToggle" type="button" aria-expanded="false">
+          Menú
+        </button>
+
+        <nav class="nav" id="navMenu"></nav>
+
+        <footer class="sidebar__footer">
+          <div class="sidebar__small">
+            © <span id="year"></span> · Landing SPA (HTML/CSS/JS)
+          </div>
+        </footer>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar__left">
+            <h1 class="topbar__title" id="pageTitle">Home</h1>
+            <p class="topbar__subtitle" id="pageSubtitle">
+              Periféricos competitivos de alto rendimiento
+            </p>
+          </div>
+          <div class="topbar__right">
+            <button class="btn btn--ghost" id="openChatbot" type="button">Chat</button>
+          </div>
+        </header>
+
+        <main id="app" class="content" role="main" aria-live="polite"></main>
+      </div>
+    </div>
+
+    <div id="modalRoot"></div>
+    <div id="chatbotRoot"></div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+.chatbot {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: min(420px, calc(100vw - 36px));
+  height: min(560px, calc(100vh - 110px));
+  border-radius: 22px;
+  border: 1px solid rgba(209, 220, 240, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 60;
+  display: none;
+  grid-template-rows: auto 1fr auto;
+}
+
+.chatbot.is-open {
+  display: grid;
+}
+
+.chatbot__header {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chatbot__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  font-size: 14px;
+}
+
+.chatbot__meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.chatbot__close {
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: rgba(247, 249, 252, 0.9);
+  cursor: pointer;
+  padding: 6px 10px;
+  font-weight: 900;
+}
+
+.chatbot__messages {
+  padding: 12px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: rgba(247, 249, 252, 0.9);
+  font-size: 13px;
+}
+.bubble--user {
+  margin-left: auto;
+  background: rgba(0, 200, 150, 0.12);
+  border-color: rgba(0, 200, 150, 0.35);
+}
+.bubble--assistant {
+  margin-right: auto;
+}
+
+.chatbot__composer {
+  padding: 12px;
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.chatbot__input {
+  width: 100%;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  outline: none;
+}
+.chatbot__input:focus {
+  border-color: rgba(10, 110, 255, 0.45);
+  box-shadow: 0 0 0 4px rgba(10, 110, 255, 0.12);
+}
+
+.chatbot__hint {
+  padding: 0 12px 12px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}

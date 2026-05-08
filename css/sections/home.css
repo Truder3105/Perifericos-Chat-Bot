@@ -1,0 +1,29 @@
+.hero {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(209, 220, 240, 0.9);
+  background: linear-gradient(
+      135deg,
+      rgba(0, 200, 150, 0.14),
+      rgba(10, 110, 255, 0.12) 60%,
+      rgba(255, 255, 255, 0.2)
+    ),
+    rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.4vw, 30px);
+  letter-spacing: 0.2px;
+}
+.hero__subtitle {
+  margin: 10px 0 0;
+  color: var(--color-text-muted);
+  max-width: 70ch;
+}
+.timeline {
+  margin-top: 14px;
+  padding-left: 18px;
+}

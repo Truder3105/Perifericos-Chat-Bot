@@ -1,0 +1,21 @@
+.instructor {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.instructor__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: var(--gradient-brand);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.instructor__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+}
+.instructor__meta {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
