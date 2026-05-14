@@ -14,7 +14,10 @@ export async function httpJson(url, options = {}) {
     const msg =
       (data && (data.error?.message || data.message)) ||
       `HTTP ${res.status} ${res.statusText}`;
-    throw new Error(msg);
+    const err = new Error(msg);
+    err.status = res.status;
+    err.apiBody = data;
+    throw err;
   }
 
   return data;

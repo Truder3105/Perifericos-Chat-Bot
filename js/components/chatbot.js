@@ -2,6 +2,19 @@ import { qs, escapeHtml, on } from "../utils/dom.js";
 import { httpJson } from "../utils/fetch.js";
 import { KNOWLEDGE_BASE } from "../data/knowledge-base.js";
 import { setGeminiKeyInBrowser } from "../config.js";
+import {
+  FALLBACK_MODEL_IDS,
+  generateContentUrl,
+  listGenerateContentModelIds,
+  normalizeModelId,
+  orderModelCandidates,
+} from "../utils/gemini.js";
+import {
+  formatGeminiChatError,
+  isGeminiAuthKeyError,
+  isGeminiNotFoundModelError,
+  isGeminiQuotaOrRateError,
+} from "../utils/geminiErrors.js";
 
 const STORAGE_KEY = "chat_history_v1";
 const MAX_TURNS = 20;
@@ -25,7 +38,7 @@ export function mountChatbot({ config }) {
         <button class="btn btn--primary" type="submit">Enviar</button>
       </form>
       <div class="chatbot__hint">
-        Tip: para habilitar Gemini, pega tu API key con <span class="mono">/key TU_API_KEY</span>
+        Tip: <span class="mono">/key TU_API_KEY</span> · <span class="mono">/clearkey</span> borra la key guardada
       </div>
     </section>
   `;
@@ -77,6 +90,13 @@ export function mountChatbot({ config }) {
     if (!raw) return;
     input.value = "";
 
+    if (raw === "/clearkey") {
+      localStorage.removeItem("GEMINI_API_KEY");
+      state.apiKey = "";
+      push("assistant", "API key borrada de este navegador.");
+      return;
+    }
+
     if (raw.startsWith("/key ")) {
       const k = raw.slice(5).trim();
       if (k) {
@@ -94,18 +114,12 @@ export function mountChatbot({ config }) {
         ? await askGemini({
             apiKey: state.apiKey,
             model: config.geminiModel,
-            apiUrl: config.geminiApiUrl,
             history: state.history,
           })
         : fallbackAnswer(raw);
       push("assistant", reply);
     } catch (err) {
-      push(
-        "assistant",
-        `No pude consultar Gemini ahora. Puedes configurar la key con /key ... o reintentar. Error: ${String(
-          err?.message || err,
-        )}`,
-      );
+      push("assistant", formatGeminiChatError(err));
     }
   });
 
@@ -124,7 +138,7 @@ function fallbackAnswer(userText) {
   return 'Solo puedo ayudarte con información sobre periféricos competitivos de nicho y los contenidos de este sitio.';
 }
 
-async function askGemini({ apiKey, model, apiUrl, history }) {
+async function askGemini({ apiKey, model, history }) {
   const contents = [];
   contents.push({
     role: "user",
@@ -142,17 +156,28 @@ async function askGemini({ apiKey, model, apiUrl, history }) {
 
   const payload = { contents };
 
-  const candidates = uniqueModels([
-    model,
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-flash",
-    "gemini-1.5-pro-latest",
-  ]);
+  let candidates = [];
+  try {
+    const available = await listGenerateContentModelIds(apiKey);
+    candidates =
+      available.length > 0
+        ? orderModelCandidates(available, model)
+        : [...FALLBACK_MODEL_IDS];
+  } catch (e) {
+    if (isGeminiAuthKeyError(e)) throw e;
+    candidates = uniqueModelIds([normalizeModelId(model), ...FALLBACK_MODEL_IDS]);
+  }
+
+  if (candidates.length === 0) {
+    candidates = [...FALLBACK_MODEL_IDS];
+  }
 
   let lastErr;
   for (const m of candidates) {
+    const id = normalizeModelId(m);
+    if (!id) continue;
     try {
-      const url = `${apiUrl}/${m}:generateContent`;
+      const url = generateContentUrl(id);
       const data = await httpJson(url, {
         method: "POST",
         headers: { "X-goog-api-key": apiKey },
@@ -165,24 +190,23 @@ async function askGemini({ apiKey, model, apiUrl, history }) {
       return String(text).trim();
     } catch (err) {
       lastErr = err;
-      const msg = String(err?.message || err);
-      if (!/not found|NOT_FOUND|models\//i.test(msg)) throw err;
-      // si el modelo no existe/soporta generateContent, probamos el siguiente
+      if (isGeminiAuthKeyError(err)) throw err;
+      if (isGeminiQuotaOrRateError(err) || isGeminiNotFoundModelError(err)) continue;
+      throw err;
     }
   }
 
   throw lastErr || new Error("No se pudo consultar Gemini.");
 }
 
-function uniqueModels(models) {
+function uniqueModelIds(ids) {
   const out = [];
   const seen = new Set();
-  for (const m of models) {
-    const mm = String(m || "").trim();
-    if (!mm) continue;
-    if (seen.has(mm)) continue;
-    seen.add(mm);
-    out.push(mm);
+  for (const raw of ids) {
+    const id = normalizeModelId(raw);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(id);
   }
   return out;
 }

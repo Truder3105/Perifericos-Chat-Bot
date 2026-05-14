@@ -4,7 +4,7 @@ const DEFAULTS = {
   defaultCurrency: "COP",
   secondaryCurrency: "USD",
   usdToCopRate: 4150,
-  geminiModel: "gemini-1.5-flash-latest",
+  geminiModel: "gemini-2.0-flash",
   geminiApiUrl: "https://generativelanguage.googleapis.com/v1beta/models",
 };
 
