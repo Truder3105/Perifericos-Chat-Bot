@@ -21,6 +21,7 @@ import {
   isGeminiNotFoundModelError,
   isGeminiQuotaOrRateError,
 } from "../utils/geminiErrors.js";
+import { detectResponseLanguage } from "../utils/lang.js";
 
 const STORAGE_KEY = "chat_history_v2";
 const MAX_TURNS = 20;
@@ -55,7 +56,7 @@ export function mountChatbot({ config }) {
       </details>
       <div class="chatbot__messages" id="chatMessages"></div>
       <form class="chatbot__composer" id="chatForm">
-        <input class="chatbot__input" id="chatInput" placeholder="Pregunta por mouse, teclados HE, mousepads, monitores o IEMs…" />
+        <input class="chatbot__input" id="chatInput" placeholder="ES / EN — mice, HE keyboards, mousepads, monitors, IEMs…" />
         <button class="btn btn--primary" type="submit">Enviar</button>
       </form>
       <div class="chatbot__hint">
@@ -118,14 +119,20 @@ export function mountChatbot({ config }) {
     input.value = "";
 
     if (raw === "/persona" || raw === "/declaracion") {
-      push("assistant", getChatbotPersonaReminder());
+      push("assistant", getChatbotPersonaReminder("both"));
       return;
     }
 
     if (raw === "/clearkey") {
       localStorage.removeItem("GEMINI_API_KEY");
       state.apiKey = "";
-      push("assistant", "API key borrada de este navegador.");
+      const lang = detectResponseLanguage(raw);
+      push(
+        "assistant",
+        lang === "en"
+          ? "API key removed from this browser."
+          : "API key borrada de este navegador.",
+      );
       return;
     }
 
@@ -134,7 +141,10 @@ export function mountChatbot({ config }) {
       if (k) {
         state.apiKey = k;
         setGeminiKeyInBrowser(k);
-        push("assistant", "Listo. API key guardada en este navegador.");
+        push(
+          "assistant",
+          "Listo. API key guardada en este navegador.\n\n(Ready. API key saved in this browser.)",
+        );
       }
       return;
     }
@@ -159,22 +169,36 @@ export function mountChatbot({ config }) {
 }
 
 function fallbackAnswer(userText) {
+  const lang = detectResponseLanguage(userText);
   const t = userText.toLowerCase();
+
   if (
-    /(persona transhumana|transhuman|declaraci[oó]n|libre.{0,20}aut[oó]nomo|autonom[ií]a|bienestar|responsabilidad social|evoluci[oó]n personal|transformaci[oó]n positiva|desarrollo humano|[ée]tica)/i.test(
+    /(persona transhumana|transhuman|declaraci[oó]n|declaracion|libre.{0,20}aut[oó]nomo|autonom[ií]a|autonomy|bienestar|well-?being|responsabilidad social|social responsibility|evoluci[oó]n personal|personal growth|transformaci[oó]n positiva|positive transformation|desarrollo humano|human development|[ée]tica|ethics)/i.test(
       t,
     )
   ) {
-    return `${getChatbotPersonaReminder()}\n\nSi además quieres hablar de periféricos (mouse, teclados HE, etc.), pregúntame con detalle. Con Gemini: /key TU_API_KEY.`;
+    const reminder = getChatbotPersonaReminder(lang === "en" ? "en" : "es");
+    if (lang === "en") {
+      return `${reminder}\n\nIf you also want help with peripherals (mice, HE keyboards, etc.), ask with details. For Gemini: /key YOUR_API_KEY.`;
+    }
+    return `${reminder}\n\nSi además quieres hablar de periféricos (mouse, teclados HE, etc.), pregúntame con detalle. Con Gemini: /key TU_API_KEY.`;
   }
+
   if (
-    /(mouse|teclad|hall|rapid|polling|mousepad|monitor|iem|audífono|audifono|zowie|pulsar|lamzu|g wolves|gwolves|w lmouse|wlmouse|atk|aula)/i.test(
+    /(mouse|teclad|hall|rapid|polling|mousepad|monitor|iem|audífono|audifono|headphone|headset|zowie|pulsar|lamzu|g wolves|gwolves|w lmouse|wlmouse|atk|aula)/i.test(
       t,
     )
   ) {
+    if (lang === "en") {
+      return "I can help with comparisons, concepts (polling rate, HE, rapid trigger) and COP/USD prices. This assistant is also guided by the Transhuman Person declaration (type /persona). For Gemini: /key YOUR_API_KEY.";
+    }
     return "Puedo ayudarte con comparaciones, conceptos (polling rate, HE, rapid trigger) y precios en COP/USD. Este asistente se orienta también por la Persona transhumana (escribe /persona). Si quieres Gemini: /key TU_API_KEY.";
   }
-  return 'Solo puedo ayudarte con información sobre periféricos competitivos de nicho y los contenidos de este sitio.';
+
+  if (lang === "en") {
+    return "I can only help with niche competitive peripherals and the contents of this site.";
+  }
+  return "Solo puedo ayudarte con información sobre periféricos competitivos de nicho y los contenidos de este sitio.";
 }
 
 async function askGemini({ apiKey, model, history }) {
