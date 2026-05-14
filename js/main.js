@@ -5,6 +5,7 @@ import { createRouter } from "./router.js";
 import { qs } from "./utils/dom.js";
 
 import { initHome } from "./sections/home.js";
+import { initPersona } from "./sections/persona.js";
 import { initMouse } from "./sections/mouse.js";
 import { initTeclados } from "./sections/teclados.js";
 import { initMousepads } from "./sections/mousepads.js";
@@ -42,6 +43,7 @@ const router = createRouter({
   onAfterRoute: (hash, appRoot) => {
     const ctx = { rate: config.usdToCopRate };
     if (hash === "#home") initHome(appRoot);
+    if (hash === "#persona") initPersona(appRoot);
     if (hash === "#mouse") initMouse(appRoot, ctx);
     if (hash === "#teclados") initTeclados(appRoot, ctx);
     if (hash === "#mousepads") initMousepads(appRoot, ctx);

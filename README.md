@@ -17,12 +17,21 @@ Landing page estilo SPA (router por hash) para periféricos competitivos de alto
 - **Componentes reutilizables**: menú (`navbar.js`), tarjetas/modales (`cards.js`, `modal.js`), chatbot (`chatbot.js`).
 - **Estilos**: `css/main.css` importa tokens, layout, componentes y secciones para mantener el diseño coherente.
 - **Chatbot**: `js/utils/gemini.js` lista modelos disponibles para la key; `geminiErrors.js` unifica mensajes de error legibles. La key puede venir de `localStorage` o de `env.json` (ver variables más abajo).
+- **Persona transhumana**: declaración institucional y ejes formativos enlazados al proyecto (`#persona`, chatbot y `knowledge-base.js`).
+
+## Declaración Persona Transhumana (criterio docente)
+
+El sitio integra de forma visible y funcional la declaración:
+
+> «Soy LIBRE, AUTÓNOMO Y RESPONSABLE a través del diálogo y la construcción, como ideal regulativo; me dirijo, controlo y dicto mis propias leyes.»
+
+**Dónde aparece:** mensaje inicial del chat (historial vacío), bloque desplegable en la cabecera del widget, comando `/persona` (o `/declaracion`), sección de navegación **Persona transhumana** (`#persona`), bloque en **Home** con enlace a esa sección, y orientación del asistente en `js/data/knowledge-base.js` (respuestas contextualmente alineadas con desarrollo humano, ética, autonomía, transformación positiva, bienestar, evolución personal y responsabilidad social, sin perder el foco en periféricos).
 
 ## Estructura
 
 - `index.html`: entry point
-- `pages/`: parciales HTML cargados por el router
-- `js/`: router, secciones, datos, componentes
+- `pages/`: parciales HTML cargados por el router (incluye `persona.html`)
+- `js/`: router, secciones, datos, componentes (incluye `data/persona-transhumana.js`)
 - `css/`: tokens, layout, componentes y secciones
 
 ## Instrucciones de ejecución
@@ -30,7 +39,7 @@ Landing page estilo SPA (router por hash) para periféricos competitivos de alto
 1. Clona o copia el proyecto y entra en la carpeta `perifericos-landing/`.
 2. Levanta un **servidor HTTP estático** en esa carpeta (el router usa `fetch` a `pages/*.html`; abrir solo el archivo con `file://` suele fallar por CORS o rutas).
 3. Abre en el navegador la URL que indique el servidor (por ejemplo `http://localhost:5500/`).
-4. Navega con el menú lateral; para el chatbot, pulsa **Chat** y, si usas Gemini, configura la key con `/key TU_API_KEY` (o usa `env.json` / variables documentadas abajo).
+4. Navega con el menú lateral (incluye **Persona transhumana**); para el chatbot, pulsa **Chat** (mensaje inicial con la declaración, o escribe `/persona`). Si usas Gemini, configura la key con `/key TU_API_KEY` (o usa `env.json` / variables documentadas abajo).
 
 ## Cómo ejecutar
 

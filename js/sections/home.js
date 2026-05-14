@@ -1,4 +1,5 @@
 import { sectionHeader } from "../components/cards.js";
+import { PERSONA_TRANSHUMANA_QUOTE } from "../data/persona-transhumana.js";
 
 export function initHome(root) {
   const target = root.querySelector("[data-home]");
@@ -10,6 +11,14 @@ export function initHome(root) {
       subtitle:
         "De hardware genérico a sensores y materiales optimizados: menos latencia, más consistencia, mejor tracking.",
     })}
+    <div class="section persona-home-strip">
+      <h3>Persona transhumana</h3>
+      <p class="persona-home-strip__quote">«${PERSONA_TRANSHUMANA_QUOTE}»</p>
+      <p class="persona-home-strip__hint">
+        Filosofía orientadora del proyecto y del chatbot. Ver ejes y módulo reflexivo en la sección dedicada.
+      </p>
+      <a class="btn btn--primary" href="#persona">Abrir declaración y ejes</a>
+    </div>
     <div class="section">
       <h3>Timeline (resumen)</h3>
       <ol class="timeline">

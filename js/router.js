@@ -3,6 +3,11 @@ import { setActiveNav } from "./components/navbar.js";
 
 const ROUTE_TABLE = {
   "#home": { page: "home.html", title: "Home", subtitle: "Historia de la IA en los periféricos" },
+  "#persona": {
+    page: "persona.html",
+    title: "Persona transhumana",
+    subtitle: "Declaración institucional y filosofía del proyecto",
+  },
   "#mouse": { page: "mouse.html", title: "Mouse", subtitle: "Hardware de puntería de élite" },
   "#teclados": { page: "teclados.html", title: "Teclados", subtitle: "Hall Effect + Rapid Trigger" },
   "#mousepads": { page: "mousepads.html", title: "Mousepads", subtitle: "Superficies y bases de nicho" },

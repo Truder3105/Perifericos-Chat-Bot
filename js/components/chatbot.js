@@ -1,6 +1,12 @@
 import { qs, escapeHtml, on } from "../utils/dom.js";
 import { httpJson } from "../utils/fetch.js";
 import { KNOWLEDGE_BASE } from "../data/knowledge-base.js";
+import {
+  getChatbotPersonaReminder,
+  getChatbotWelcomeMessage,
+  PERSONA_TRANSHUMANA_QUOTE,
+  PERSONA_TRANSHUMANA_THEMES,
+} from "../data/persona-transhumana.js";
 import { setGeminiKeyInBrowser } from "../config.js";
 import {
   FALLBACK_MODEL_IDS,
@@ -16,12 +22,14 @@ import {
   isGeminiQuotaOrRateError,
 } from "../utils/geminiErrors.js";
 
-const STORAGE_KEY = "chat_history_v1";
+const STORAGE_KEY = "chat_history_v2";
 const MAX_TURNS = 20;
 
 export function mountChatbot({ config }) {
   const root = qs("#chatbotRoot");
   if (!root) return;
+
+  const manifestThemes = PERSONA_TRANSHUMANA_THEMES.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
 
   root.innerHTML = `
     <section class="chatbot" id="chatbot" aria-label="Chatbot">
@@ -32,13 +40,27 @@ export function mountChatbot({ config }) {
         </div>
         <button class="chatbot__close" type="button" id="chatbotClose">Cerrar</button>
       </div>
+      <details class="chatbot__manifest">
+        <summary class="chatbot__manifest-summary">
+          <span class="chatbot__manifest-label">Declaración Persona Transhumana</span>
+        </summary>
+        <div class="chatbot__manifest-body">
+          <p class="chatbot__manifest-quote">«${escapeHtml(PERSONA_TRANSHUMANA_QUOTE)}»</p>
+          <p class="chatbot__manifest-sub">Ejes relacionados:</p>
+          <ul class="chatbot__manifest-list">${manifestThemes}</ul>
+          <p class="chatbot__manifest-foot">
+            También en el menú: <a href="#persona">Persona transhumana</a>
+          </p>
+        </div>
+      </details>
       <div class="chatbot__messages" id="chatMessages"></div>
       <form class="chatbot__composer" id="chatForm">
         <input class="chatbot__input" id="chatInput" placeholder="Pregunta por mouse, teclados HE, mousepads, monitores o IEMs…" />
         <button class="btn btn--primary" type="submit">Enviar</button>
       </form>
       <div class="chatbot__hint">
-        Tip: <span class="mono">/key TU_API_KEY</span> · <span class="mono">/clearkey</span> borra la key guardada
+        Tip: <span class="mono">/key TU_API_KEY</span> · <span class="mono">/clearkey</span> · <span class="mono">/persona</span>
+        · Sección <a href="#persona">#persona</a>
       </div>
     </section>
   `;
@@ -53,6 +75,11 @@ export function mountChatbot({ config }) {
     history: loadHistory(),
     apiKey: config.geminiApiKey || "",
   };
+
+  if (!state.history.length) {
+    state.history = [{ role: "assistant", text: getChatbotWelcomeMessage() }];
+    saveHistory(state.history);
+  }
 
   const renderAll = () => {
     messagesEl.innerHTML = state.history
@@ -89,6 +116,11 @@ export function mountChatbot({ config }) {
     const raw = input.value.trim();
     if (!raw) return;
     input.value = "";
+
+    if (raw === "/persona" || raw === "/declaracion") {
+      push("assistant", getChatbotPersonaReminder());
+      return;
+    }
 
     if (raw === "/clearkey") {
       localStorage.removeItem("GEMINI_API_KEY");
@@ -129,11 +161,18 @@ export function mountChatbot({ config }) {
 function fallbackAnswer(userText) {
   const t = userText.toLowerCase();
   if (
+    /(persona transhumana|transhuman|declaraci[oó]n|libre.{0,20}aut[oó]nomo|autonom[ií]a|bienestar|responsabilidad social|evoluci[oó]n personal|transformaci[oó]n positiva|desarrollo humano|[ée]tica)/i.test(
+      t,
+    )
+  ) {
+    return `${getChatbotPersonaReminder()}\n\nSi además quieres hablar de periféricos (mouse, teclados HE, etc.), pregúntame con detalle. Con Gemini: /key TU_API_KEY.`;
+  }
+  if (
     /(mouse|teclad|hall|rapid|polling|mousepad|monitor|iem|audífono|audifono|zowie|pulsar|lamzu|g wolves|gwolves|w lmouse|wlmouse|atk|aula)/i.test(
       t,
     )
   ) {
-    return "Puedo ayudarte con comparaciones, conceptos (polling rate, HE, rapid trigger) y precios en COP/USD. Si quieres habilitar respuestas con Gemini: escribe /key TU_API_KEY.";
+    return "Puedo ayudarte con comparaciones, conceptos (polling rate, HE, rapid trigger) y precios en COP/USD. Este asistente se orienta también por la Persona transhumana (escribe /persona). Si quieres Gemini: /key TU_API_KEY.";
   }
   return 'Solo puedo ayudarte con información sobre periféricos competitivos de nicho y los contenidos de este sitio.';
 }

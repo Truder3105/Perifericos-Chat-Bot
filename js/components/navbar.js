@@ -2,6 +2,7 @@ import { qs } from "../utils/dom.js";
 
 export const ROUTES = [
   { hash: "#home", label: "Home", hint: "Historia + timeline" },
+  { hash: "#persona", label: "Persona transhumana", hint: "Declaración + ejes" },
   { hash: "#mouse", label: "Mouse", hint: "Puntería de élite" },
   { hash: "#teclados", label: "Teclados", hint: "Hall Effect" },
   { hash: "#mousepads", label: "Mousepads", hint: "Speed/Control" },
