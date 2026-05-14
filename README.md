@@ -19,7 +19,7 @@ Landing page estilo SPA (router por hash) para periféricos competitivos de alto
 - **Chatbot**: `js/utils/gemini.js` lista modelos disponibles para la key; `geminiErrors.js` unifica mensajes de error legibles. La key puede venir de `localStorage` o de `env.json` (ver variables más abajo).
 - **Persona transhumana**: declaración institucional y ejes formativos enlazados al proyecto (`#persona`, chatbot y `knowledge-base.js`).
 
-## Declaración Persona Transhumana (criterio docente)
+## Declaración Persona Transhumana
 
 El sitio integra de forma visible y funcional la declaración:
 
